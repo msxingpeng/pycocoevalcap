@@ -13,6 +13,7 @@ import sys
 import subprocess
 import tempfile
 import itertools
+from jdk4py import JAVA
 
 # path to the stanford corenlp jar
 STANFORD_CORENLP_3_4_1_JAR = 'stanford-corenlp-3.4.1.jar'
@@ -25,7 +26,7 @@ class PTBTokenizer:
     """Python wrapper of Stanford PTBTokenizer"""
 
     def tokenize(self, captions_for_image):
-        cmd = ['java', '-cp', STANFORD_CORENLP_3_4_1_JAR, \
+        cmd = [str(JAVA), '-cp', STANFORD_CORENLP_3_4_1_JAR, \
                 'edu.stanford.nlp.process.PTBTokenizer', \
                 '-preserveLines', '-lowerCase']
 
@@ -40,7 +41,9 @@ class PTBTokenizer:
         # save sentences to temporary file
         # ======================================================
         path_to_jar_dirname=os.path.dirname(os.path.abspath(__file__))
-        tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=path_to_jar_dirname)
+        dst_dir = '/tmp'
+        os.system(f'cp {path_to_jar_dirname}/{STANFORD_CORENLP_3_4_1_JAR} {dst_dir}/{STANFORD_CORENLP_3_4_1_JAR}')
+        tmp_file = tempfile.NamedTemporaryFile(delete=False, dir=dst_dir)
         tmp_file.write(sentences.encode())
         tmp_file.close()
 
@@ -48,7 +51,7 @@ class PTBTokenizer:
         # tokenize sentence
         # ======================================================
         cmd.append(os.path.basename(tmp_file.name))
-        p_tokenizer = subprocess.Popen(cmd, cwd=path_to_jar_dirname, \
+        p_tokenizer = subprocess.Popen(cmd, cwd=dst_dir, \
                 stdout=subprocess.PIPE)
         token_lines = p_tokenizer.communicate(input=sentences.rstrip())[0]
         token_lines = token_lines.decode()
