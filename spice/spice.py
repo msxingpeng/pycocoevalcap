@@ -51,7 +51,18 @@ class Spice:
               "refs" : ref
             })
 
-        cwd = os.path.dirname(os.path.abspath(__file__))
+        cwd= '/tmp'
+        # cwd=os.path.dirname(os.path.abspath(__file__))
+        cur_dir = os.path.dirname(os.path.abspath(__file__))
+        spice_jar_file_path = os.path.join(cur_dir, 'spice-1.0.jar')
+        os.system(f'cp {spice_jar_file_path} {cwd}')
+        # move current *.jar files to /tmp/lib
+        cur_lib_dir = os.path.join(cur_dir, 'lib')
+        lib_file_list = os.listdir(cur_lib_dir)
+        target_lib_path = os.path.join(cwd, 'lib')
+        for lib_file in lib_file_list:
+          os.system(f'cp {os.path.join(cur_lib_dir, lib_file)} {target_lib_path}')
+        SPICE_JAR = os.path.join(cwd, 'spice-1.0.jar')
         temp_dir=os.path.join(cwd, TEMP_DIR)
         if not os.path.exists(temp_dir):
           os.makedirs(temp_dir)
@@ -72,8 +83,8 @@ class Spice:
           '-subset',
           '-silent'
         ]
-        subprocess.check_call(spice_cmd, 
-            cwd=os.path.dirname(os.path.abspath(__file__)))
+        
+        subprocess.check_call(spice_cmd, cwd=cwd)
 
         # Read and process results
         with open(out_file.name) as data_file:    

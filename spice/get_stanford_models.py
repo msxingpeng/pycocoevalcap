@@ -5,9 +5,9 @@ from urllib.request import urlretrieve
 from zipfile import ZipFile
 
 CORENLP = 'stanford-corenlp-full-2015-12-09'
-SPICELIB = 'lib'
 JAR = 'stanford-corenlp-3.6.0'
-SPICEDIR = os.path.dirname(__file__)
+SPICELIB = 'lib'
+SPICEDIR = '/tmp'
 
 
 def print_progress(transferred_blocks, block_size, total_size):
@@ -25,19 +25,18 @@ def get_stanford_models():
         print('Downloading {} for SPICE ...'.format(JAR))
         url = 'http://nlp.stanford.edu/software/{}.zip'.format(CORENLP)
         zip_file, headers = urlretrieve(url, reporthook=print_progress)
-        print()
         print('Extracting {} ...'.format(JAR))
         file_name = os.path.join(CORENLP, JAR)
         # file names in zip use '/' separator regardless of OS
         zip_file_name = '/'.join([CORENLP, JAR])
         target_name = os.path.join(SPICEDIR, SPICELIB, JAR)
+        if not os.path.exists(os.path.join(SPICEDIR, SPICELIB)):
+            os.makedirs(os.path.join(SPICEDIR, SPICELIB))
         for filef in ['{}.jar', '{}-models.jar']:
             ZipFile(zip_file).extract(filef.format(zip_file_name), SPICEDIR)
             os.rename(os.path.join(SPICEDIR, filef.format(file_name)),
                       filef.format(target_name))
 
-        os.rmdir(os.path.join(SPICEDIR, CORENLP))
-        os.remove(zip_file)
         print('Done.')
 
 
