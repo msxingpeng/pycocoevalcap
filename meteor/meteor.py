@@ -7,7 +7,7 @@ import os
 import sys
 import subprocess
 import threading
-
+from jdk4py import JAVA
 # Assumes meteor-1.5.jar is in the same directory as meteor.py.  Change as needed.
 METEOR_JAR = 'meteor-1.5.jar'
 # print METEOR_JAR
@@ -15,7 +15,7 @@ METEOR_JAR = 'meteor-1.5.jar'
 class Meteor:
 
     def __init__(self):
-        self.meteor_cmd = ['java', '-jar', '-Xmx2G', METEOR_JAR, \
+        self.meteor_cmd = [str(JAVA), '-jar', '-Xmx2G', METEOR_JAR, \
                 '-', '-', '-stdio', '-l', 'en', '-norm']
         self.meteor_p = subprocess.Popen(self.meteor_cmd, \
                 cwd=os.path.dirname(os.path.abspath(__file__)), \
